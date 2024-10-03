@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spiral Abyss Competition Setup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .next-step, .ban-step, .buff-step, .common-char-step, .summary-step, .gameplay-step {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Spiral Abyss Competition Setup</h1>
+        
+        <!-- Initial form to submit player name -->
+        <form id="playerForm">
+            <label for="playerName">Player Name:</label>
+            <input type="text" id="playerName" name="playerName" required>
+            <button type="submit">Submit Name</button>
+        </form>
+
+        <!-- Step 2: Display after name submission -->
+        <div id="nextStep" class="next-step">
+            <h2>Welcome, <span id="displayName"></span>!</h2>
+            <p>Random number of characters to ban: <span id="banCount"></span></p>
+        </div>
+
+        <!-- Step 3: Banning characters -->
+        <div id="banStep" class="ban-step">
+            <p>Please enter the characters to ban:</p>
+            <form id="banForm">
+                <div id="banInputs"></div>
+                <button type="submit">Submit Banned Characters</button>
+            </form>
+        </div>
+
+        <!-- Step 4: Buff selection -->
+        <div id="buffStep" class="buff-step">
+            <h2>Buff Selection for Stages</h2>
+            <p>Stage 12-1: <span id="buff121"></span></p>
+            <p>Stage 12-2: <span id="buff122"></span></p>
+            <p>Stage 12-3: <span id="buff123"></span></p>
+        </div>
+
+        <!-- Step 5: Common Standard Characters -->
+        <div id="commonCharStep" class="common-char-step">
+            <h2>Common Standard Characters</h2>
+            <p>Random number of common standard characters: <span id="commonCharCount"></span></p>
+            <form id="commonCharForm">
+                <div id="commonCharInputs"></div>
+                <button type="submit">Submit Common Characters</button>
+            </form>
+        </div>
+
+        <!-- Step 6: Gameplay Duration -->
+        <div id="gameplayStep" class="gameplay-step">
+            <h2>Gameplay Duration</h2>
+            <p>Your gameplay duration is: <span id="gameplayDuration"></span></p>
+        </div>
+
+        <!-- Step 7: Summary -->
+        <div id="summaryStep" class="summary-step">
+            <h2>Competition Summary</h2>
+            <p><strong>Player Name:</strong> <span id="summaryPlayer"></span></p>
+            <p><strong>Banned Characters:</strong> <span id="summaryBanned"></span></p>
+            <p><strong>Buffs:</strong></p>
+            <p>Stage 12-1: <span id="summaryBuff121"></span></p>
+            <p>Stage 12-2: <span id="summaryBuff122"></span></p>
+            <p>Stage 12-3: <span id="summaryBuff123"></span></p>
+            <p><strong>Common Standard Characters:</strong> <span id="summaryCommon"></span></p>
+            <p><strong>Gameplay Duration:</strong> <span id="summaryGameplay"></span></p>
+            <button id="restartButton">Restart</button>
+        </div>
+    </div>
+
+    <script>
+        // Player name submission form
+        document.getElementById('playerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const playerName = document.getElementById('playerName').value;
+            if (playerName) {
+                document.getElementById('displayName').textContent = playerName;
+                const banCount = Math.floor(Math.random() * 3);
+                document.getElementById('banCount').textContent = banCount;
+
+                if (banCount > 0) {
+                    document.getElementById('banStep').style.display = 'block';
+                    generateBanInputs(banCount);
+                } else {
+                    alert('No characters to ban. Proceeding to buff selection.');
+                    randomBuffSelection();
+                }
+
+                document.getElementById('nextStep').style.display = 'block';
+                document.getElementById('playerForm').style.display = 'none';
+            } else {
+                alert('Please enter your name!');
+            }
+        });
+
+        // Generate input fields for banning characters
+        function generateBanInputs(banCount) {
+            const banInputsContainer = document.getElementById('banInputs');
+            banInputsContainer.innerHTML = '';
+
+            for (let i = 1; i <= banCount; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.name = `banCharacter${i}`;
+                input.placeholder = `Character to Ban ${i}`;
+                input.required = true;
+                banInputsContainer.appendChild(input);
+                banInputsContainer.appendChild(document.createElement('br'));
+            }
+        }
+
+        // Banned characters submission
+        document.getElementById('banForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const banCharacterInputs = document.querySelectorAll('[name^="banCharacter"]');
+            const bannedCharacters = Array.from(banCharacterInputs).map(input => input.value);
+            randomBuffSelection();
+        });
+
+        // Buff selection
+        function randomBuffSelection() {
+            const buffs = ['left', 'middle', 'right'];
+            document.getElementById('buff121').textContent = buffs[Math.floor(Math.random() * buffs.length)];
+            document.getElementById('buff122').textContent = buffs[Math.floor(Math.random() * buffs.length)];
+            document.getElementById('buff123').textContent = buffs[Math.floor(Math.random() * buffs.length)];
+
+            // Hide previous steps before displaying the buff selection
+            document.getElementById('buffStep').style.display = 'block';
+            document.getElementById('banStep').style.display = 'none';
+            randomCommonCharacters();
+        }
+
+        // Generate random common standard characters
+        function randomCommonCharacters() {
+            const commonCharCount = Math.floor(Math.random() * 3);
+            document.getElementById('commonCharCount').textContent = commonCharCount;
+            
+            if (commonCharCount > 0) {
+                document.getElementById('commonCharStep').style.display = 'block';
+                generateCommonCharInputs(commonCharCount);
+            } else {
+                displayGameplayDuration();
+            }
+        }
+
+        // Generate input fields for common standard characters
+        function generateCommonCharInputs(commonCharCount) {
+            const commonCharInputsContainer = document.getElementById('commonCharInputs');
+            commonCharInputsContainer.innerHTML = '';
+
+            for (let i = 1; i <= commonCharCount; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.name = `commonCharacter${i}`;
+                input.placeholder = `Common Character ${i}`;
+                input.required = true;
+                commonCharInputsContainer.appendChild(input);
+                commonCharInputsContainer.appendChild(document.createElement('br'));
+            }
+        }
+
+        // Common characters submission
+        document.getElementById('commonCharForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            displayGameplayDuration();
+        });
+
+        // Display gameplay duration
+        function displayGameplayDuration() {
+            const gameplayDuration = Math.floor(Math.random() * (15 - 10 + 1)) + 10;
+            document.getElementById('gameplayDuration').textContent = gameplayDuration + " minutes"; // Add " minutes" here
+
+            // Clear previous steps before displaying the gameplay duration
+            clearPreviousSteps();
+            document.getElementById('gameplayStep').style.display = 'block';
+            displaySummary(gameplayDuration);
+        }
+
+        // Display competition summary
+        function displaySummary(gameplayDuration) {
+            const playerName = document.getElementById('playerName').value;
+            const banCharacterInputs = document.querySelectorAll('[name^="banCharacter"]');
+            const bannedCharacters = Array.from(banCharacterInputs).map(input => input.value).join(', ');
+
+            const buff121 = document.getElementById('buff121').textContent;
+            const buff122 = document.getElementById('buff122').textContent;
+            const buff123 = document.getElementById('buff123').textContent;
+
+            const commonCharacterInputs = document.querySelectorAll('[name^="commonCharacter"]');
+            const commonCharacters = Array.from(commonCharacterInputs).map(input => input.value).join(', ');
+
+            // Display summary information
+            document.getElementById('summaryPlayer').textContent = playerName;
+            document.getElementById('summaryBanned').textContent = bannedCharacters;
+            document.getElementById('summaryBuff121').textContent = buff121;
+            document.getElementById('summaryBuff122').textContent = buff122;
+            document.getElementById('summaryBuff123').textContent = buff123;
+            document.getElementById('summaryCommon').textContent = commonCharacters;
+            document.getElementById('summaryGameplay').textContent = gameplayDuration + " minutes"; // Add " minutes" here
+
+            // Hide gameplay step and display the summary
+            clearPreviousSteps();
+            document.getElementById('summaryStep').style.display = 'block';
+        }
+
+        // Clear all previous steps
+        function clearPreviousSteps() {
+            document.getElementById('nextStep').style.display = 'none';
+            document.getElementById('banStep').style.display = 'none';
+            document.getElementById('buffStep').style.display = 'none';
+            document.getElementById('commonCharStep').style.display = 'none';
+            document.getElementById('gameplayStep').style.display = 'none';
+        }
+
+        // Restart the program
+        document.getElementById('restartButton').addEventListener('click', function() {
+            location.reload(); // Reloads the page
+        });
+    </script>
+</body>
+</html>
